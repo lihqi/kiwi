@@ -55,8 +55,12 @@ function prettierFile(fileContent) {
   try {
     return prettier.format(fileContent, {
       parser: 'typescript',
+      printWidth: 100,
+      singleQuote: true,
+      jsxSingleQuote: true,
       trailingComma: 'all',
-      singleQuote: true
+      semicolons: true,
+      tabWidth: 2
     });
   } catch (e) {
     failInfo(`代码格式化报错！${e.toString()}\n代码为：${fileContent}`);
@@ -235,4 +239,4 @@ function replaceAndUpdate(filePath, arg, val, validateDuplicate, needWrite = tru
   }
 }
 
-export { replaceAndUpdate, hasImportI18N, createImportI18N };
+export { replaceAndUpdate, hasImportI18N, createImportI18N, prettierFile };

@@ -9,7 +9,7 @@ require('ts-node').register({
   }
 });
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import { traverse, getProjectConfig, getLangDir, translateText } from './utils';
 import { baiduTranslateTexts, googleTranslateTexts } from './translate';

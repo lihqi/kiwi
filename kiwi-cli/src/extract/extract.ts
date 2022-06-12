@@ -175,7 +175,7 @@ function getReplaceableStrs(currentFilename: string, langsPrefix: string, transl
  * 递归匹配项目中所有的代码的中文
  * @param {dirPath} 文件夹路径
  */
-function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) {
+async function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) {
   const dir = dirPath || './';
   // 去除I18N
   const langsPrefix = prefix ? prefix.replace(/^I18N\./, '') : null;
@@ -191,7 +191,7 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
   const allTargetStrs = findAllChineseText(dir);
   if (allTargetStrs.length === 0) {
     console.log(highlightText('没有发现可替换的文案！'));
-    return;
+    return Promise.resolve();
   }
 
   // 提示翻译源
@@ -276,7 +276,7 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
       });
   };
 
-  allTargetStrs
+  await allTargetStrs
     .reduce((prev, current) => {
       return prev.then(() => {
         return generateKeyAndReplace(current);
@@ -288,6 +288,7 @@ function extractAll({ dirPath, prefix }: { dirPath?: string; prefix?: string }) 
     .catch((e: any) => {
       failInfo(e.message);
     });
+  return Promise.resolve();
 }
 
 export { extractAll };

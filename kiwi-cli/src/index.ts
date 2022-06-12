@@ -13,6 +13,8 @@ import { extractAll } from './extract/extract';
 import { translate } from './translate';
 import { getTranslateOriginType } from './utils';
 import * as ora from 'ora';
+import * as fs from 'fs-extra';
+import { prettierFile } from './extract/replace';
 
 /**
  * 进度条加载
@@ -125,17 +127,22 @@ if (commander.translate) {
 }
 
 if (commander.extract) {
-  console.log(isString(commander.prefix));
-  if (commander.prefix === true) {
-    console.log('请指定翻译后文案 key 值的前缀 --prefix xxxx');
-  } else if (isString(commander.prefix) && !new RegExp(/^I18N(\.[-_a-zA-Z1-9$]+)+$/).test(commander.prefix)) {
-    console.log('前缀必须以I18N开头,后续跟上字母、下滑线、破折号、$ 字符组成的变量名');
-  } else {
-    const extractAllParams = {
-      prefix: isString(commander.prefix) && commander.prefix,
-      dirPath: isString(commander.extract) && commander.extract
-    };
+  const fn = async () => {
+    console.log(isString(commander.prefix));
+    if (commander.prefix === true) {
+      console.log('请指定翻译后文案 key 值的前缀 --prefix xxxx');
+    } else if (isString(commander.prefix) && !new RegExp(/^I18N(\.[-_a-zA-Z1-9$]+)+$/).test(commander.prefix)) {
+      console.log('前缀必须以I18N开头,后续跟上字母、下滑线、破折号、$ 字符组成的变量名');
+    } else {
+      const extractAllParams = {
+        prefix: isString(commander.prefix) && commander.prefix,
+        dirPath: isString(commander.extract) && commander.extract
+      };
 
-    extractAll(extractAllParams);
-  }
+      await extractAll(extractAllParams);
+      const content = await fs.readFileSync(commander.extract, { encoding: 'utf8' });
+      fs.writeFileSync(commander.extract, prettierFile(content));
+    }
+  };
+  fn();
 }
